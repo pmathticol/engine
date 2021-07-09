@@ -252,11 +252,11 @@ static void RunBundleAndSnapshotFromLibrary(JNIEnv* env,
                                             jobject jAssetManager) {
   auto asset_manager = std::make_shared<flutter::AssetManager>();
 
-  asset_manager->PushBack(std::make_unique<flutter::APKAssetProvider>(
-      env,                                             // jni environment
-      jAssetManager,                                   // asset manager
-      fml::jni::JavaStringToString(env, jBundlePath))  // apk asset dir
-  );
+
+  //change support dynamic asset path
+  const auto bundle_path = fml::jni::JavaStringToString(env, jBundlePath);
+  asset_manager->PushBack(std::make_unique<DirectoryAssetBundle>(fml::OpenDirectory(
+                    bundle_path.c_str(), false, fml::FilePermission::kRead)));
 
   auto entrypoint = fml::jni::JavaStringToString(env, jEntrypoint);
   auto libraryUrl = fml::jni::JavaStringToString(env, jLibraryUrl);

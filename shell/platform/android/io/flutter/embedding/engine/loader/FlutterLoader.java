@@ -90,6 +90,11 @@ public class FlutterLoader {
   private FlutterApplicationInfo flutterApplicationInfo;
   private FlutterJNI flutterJNI;
 
+  // 增加传参
+  public String flutterSoPath = "";
+  public String appSoPath = "";
+  public String flutterAssetsPath = "";
+
   private static class InitResult {
     final String appStoragePath;
     final String engineCachesPath;
@@ -140,6 +145,13 @@ public class FlutterLoader {
 
     initStartTimestampMillis = SystemClock.uptimeMillis();
     flutterApplicationInfo = ApplicationInfoLoader.load(appContext);
+    //修改一下动态路径，目前修改3个，flutter.so 和 appso，以及assetpath
+    if(appSoPath != null && appSoPath.length()>0) {
+      flutterApplicationInfo.aotSharedLibraryName = appSoPath;
+    }
+    if(flutterAssetsPath!=null && flutterAssetsPath.length()>0){
+       flutterApplicationInfo.flutterAssetsDir = flutterAssetsPath;
+    }
     VsyncWaiter.getInstance((WindowManager) appContext.getSystemService(Context.WINDOW_SERVICE))
         .init();
 
@@ -150,7 +162,7 @@ public class FlutterLoader {
           public InitResult call() {
             ResourceExtractor resourceExtractor = initResources(appContext);
 
-            flutterJNI.loadLibrary();
+            flutterJNI.loadLibrary(flutterSoPath);
 
             // Prefetch the default font manager as soon as possible on a background thread.
             // It helps to reduce time cost of engine setup that blocks the platform thread.
