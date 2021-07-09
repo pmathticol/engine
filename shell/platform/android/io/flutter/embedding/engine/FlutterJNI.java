@@ -99,6 +99,19 @@ import java.util.concurrent.CopyOnWriteArraySet;
 public class FlutterJNI {
   private static final String TAG = "FlutterJNI";
 
+  /**
+   * Loads the libflutter.so C++ library.
+   *
+   * <p>This must be called before any other native methods, and can be overridden by tests to avoid
+   * loading native libraries.
+   *
+   * <p>This method should only be called once across all FlutterJNI instances.
+   * @param referPath 是否由外面指定路径加载
+   */
+  public void loadLibrary() {
+    loadLibrary("");
+  }
+
   // BEGIN Methods related to loading for FlutterLoader.
   /**
    * Loads the libflutter.so C++ library.
@@ -107,15 +120,22 @@ public class FlutterJNI {
    * loading native libraries.
    *
    * <p>This method should only be called once across all FlutterJNI instances.
+   * @param referFlutterSoPath 是否由外面指定路径加载
    */
-  public void loadLibrary() {
+  public void loadLibrary(String referFlutterSoPath) {
     if (FlutterJNI.loadLibraryCalled) {
       Log.w(TAG, "FlutterJNI.loadLibrary called more than once");
     }
-
-    System.loadLibrary("flutter");
+    if(referFlutterSoPath != null && referFlutterSoPath.length() > 0){
+       Log.w(TAG, "loadLibrary: referFlutterSoPath " + referFlutterSoPath);
+       System.load(referFlutterSoPath);
+    }else {
+      System.loadLibrary("flutter");
+    }
     FlutterJNI.loadLibraryCalled = true;
   }
+
+
 
   private static boolean loadLibraryCalled = false;
 
