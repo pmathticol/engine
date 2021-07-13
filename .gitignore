@@ -17,6 +17,9 @@
 .project
 .pub
 .pydevproject
+.cipd/
+.gclient_entries
+.gclient
 compile_commands.json
 cscope.*
 Session.vim
